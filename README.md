@@ -1,7 +1,6 @@
 # eJPTv2
 Everything you need to succeed in the eJPTv2 Practical Exam.
 
-
 + Recommendation: 
     + Note Taking & Reporting is not a recommendation, its a must ! 
     + Use Cherry Tree : https://www.giuspen.net/cherrytree/
@@ -27,7 +26,6 @@ Everything you need to succeed in the eJPTv2 Practical Exam.
       - Overpass CTF [ Medium ]
       - Blue CTF [ Medium ]
       - Ice CTF [ Medium ]
-      - 
       - VulnNet: Internal [ Hard ]
 
 + Special thanks goes to:
