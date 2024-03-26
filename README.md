@@ -32,5 +32,6 @@ Everything you need to succeed in the eJPTv2 Practical Exam.
     - @LoghmariAla : https://github.com/LoghmariAla/eJPTv2 [ Use Obsidian ]
     - @B4PHOM3T : https://github.com/B4PHOM3T/eJPT-Notes/tree/main [ Use Obsidian ]
     - @syselement : https://blog.syselement.com/ine/courses/ejpt
+    - @nmmorette : https://nmmorette.github.io/posts/2023/12/ejptv2-cheat-sheet/
     - @Alexis_Ahmed : https://alexisahmed.com/
 
